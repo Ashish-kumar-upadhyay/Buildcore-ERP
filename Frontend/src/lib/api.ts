@@ -63,7 +63,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 export async function login(email: string, password: string) {
   const data = await api<{ token: string; user: SessionUser }>("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, identifier: email, password }),
   });
   saveSession(data.token, data.user);
   return data.user;

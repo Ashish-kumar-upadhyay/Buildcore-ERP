@@ -68,14 +68,14 @@ export const modules = {
     prefix: "PO",
     writers: INV,
     readers: ALL,
-    workflow: ["Draft", "Ordered", "In transit", "Received"],
+    workflow: ["Draft", "Submitted"],
     cols: [
       ["vendor", ...str()],
       ["material", ...str()],
       ["quantity", ...num()],
       ["amount", ...num()],
       ["date", ...str()],
-      ["status", ...str(["Draft", "Ordered", "In transit", "Received", "Cancelled"])],
+      ["status", ...str(["Draft", "Submitted", "Partially Received", "Received", "Cancelled"])],
     ],
   },
   transactions: {
@@ -100,6 +100,7 @@ export const modules = {
     readers: ALL,
     cols: [
       ["name", ...str()],
+      ["loginId", ...str()],
       ["role", ...str()],
       ["dept", ...str()],
       ["status", ...str(["Present", "Field", "On Leave", "Absent"])],
@@ -143,7 +144,7 @@ export const modules = {
       ["from", ...str()],
       ["to", ...str()],
       ["days", ...num()],
-      ["status", ...str(["Pending", "Approved", "Rejected"])],
+      ["status", ...str(["Pending", "Approved", "Rejected", "Cancelled"])],
     ],
   },
   expenses: {

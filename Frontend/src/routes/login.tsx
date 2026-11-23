@@ -34,8 +34,12 @@ function Login() {
   const enter = async (accountEmail: string, accountPassword: string) => {
     setBusy(true);
     try {
-      await login(accountEmail, accountPassword);
-      await nav({ to: "/dashboard" });
+      const user = await login(accountEmail, accountPassword);
+      if (user.role === "Manager") {
+        await nav({ to: "/notifications", search: { tab: "requests" } });
+      } else {
+        await nav({ to: "/dashboard" });
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Unable to sign in");
     } finally {
@@ -55,7 +59,7 @@ function Login() {
 
           <motion.form className="login-form" initial={reduced ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.6 }} onSubmit={(e) => { e.preventDefault(); void enter(email, password); }}>
             <div className="login-welcome"><h1>Welcome <span>Back</span></h1><p>Sign in to your BUILDCORE ERP account</p></div>
-            <label className="login-input"><Mail aria-hidden="true" /><input aria-label="Email address" type="email" placeholder="Enter your email address" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></label>
+            <label className="login-input"><Mail aria-hidden="true" /><input aria-label="Employee ID or email address" type="text" placeholder="Enter employee ID or email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} /></label>
             <label className="login-input"><LockKeyhole aria-hidden="true" /><input aria-label="Password" type={visible ? "text" : "password"} placeholder="Enter your password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} /><Button type="button" variant="ghost" size="icon" className="login-eye" aria-label={visible ? "Hide password" : "Show password"} onClick={() => setVisible(!visible)}>{visible ? <Eye /> : <EyeOff />}</Button></label>
             <div className="login-options"><label><input type="checkbox" defaultChecked />Remember me</label><Button type="button" variant="link" onClick={() => setDialog("password")}>Forgot password?</Button></div>
             <Button type="submit" className="login-submit" disabled={busy}><ArrowRight /><span>Sign In</span></Button>

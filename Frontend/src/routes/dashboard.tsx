@@ -25,9 +25,11 @@ import {
   Clock,
   CalendarOff,
   UserSquare,
+  Inbox,
 } from "lucide-react";
 import { AppShell, StatCard, Panel, Pill } from "@/components/erp/AppShell";
 import { inr, type Material } from "@/lib/mock-data";
+import { Button } from "@/components/ui/button";
 
 type Dash = {
   materials: Material[];
@@ -38,6 +40,7 @@ type Dash = {
   leaves: { status: string }[];
   monthlySales: { m: string; sales: number; purchase: number }[];
   activities: { who: string; what: string; when: string; tone: string }[];
+  pendingMaterialRequests: number;
 };
 
 export const Route = createFileRoute("/dashboard")({
@@ -66,6 +69,242 @@ const tip = {
   },
 };
 
+type AttendanceEntry = {
+  id: string;
+  date: string;
+  checkIn: string;
+  checkOut: string;
+  status: string;
+};
+
+type LeaveEntry = {
+  id: string;
+  type: string;
+  from: string;
+  to: string;
+  days: number;
+  status: string;
+};
+
+function EmployeeSelfServiceDashboard() {
+  const [attendance, setAttendance] = useState<AttendanceEntry[]>([]);
+  const [leaves, setLeaves] = useState<LeaveEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [punching, setPunching] = useState(false);
+  const [submittingLeave, setSubmittingLeave] = useState(false);
+  const [leaveType, setLeaveType] = useState("Casual");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [today] = useState(() => new Date().toISOString().slice(0, 10));
+  const firstName = readSession()?.user.name.split(" ")[0] ?? "Employee";
+  const todayAttendance = attendance.find((row) => row.date === today);
+  const checkedIn = Boolean(
+    todayAttendance && todayAttendance.checkIn !== "—" && todayAttendance.checkOut === "—",
+  );
+
+  useEffect(() => {
+    let active = true;
+    const load = () => {
+      void Promise.all([
+        api<{ rows: AttendanceEntry[] }>("/records/attendance"),
+        api<{ rows: LeaveEntry[] }>("/records/leaves"),
+      ])
+        .then(([attendanceData, leaveData]) => {
+          if (!active) return;
+          setAttendance(attendanceData.rows);
+          setLeaves(leaveData.rows);
+        })
+        .catch((error: unknown) => {
+          toast.error(error instanceof Error ? error.message : "Unable to load attendance and leave");
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    };
+    load();
+    const refresh = window.setInterval(load, 15000);
+    return () => {
+      active = false;
+      window.clearInterval(refresh);
+    };
+  }, []);
+
+  const punch = async () => {
+    setPunching(true);
+    try {
+      await api("/attendance/punch", {
+        method: "POST",
+        body: JSON.stringify({ action: checkedIn ? "out" : "in" }),
+      });
+      toast.success(checkedIn ? "Checked out successfully" : "Checked in successfully");
+      const [attendanceData, leaveData] = await Promise.all([
+        api<{ rows: AttendanceEntry[] }>("/records/attendance"),
+        api<{ rows: LeaveEntry[] }>("/records/leaves"),
+      ]);
+      setAttendance(attendanceData.rows);
+      setLeaves(leaveData.rows);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to record attendance");
+    } finally {
+      setPunching(false);
+    }
+  };
+
+  const submitLeave = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmittingLeave(true);
+    try {
+      const result = await api<{ row: LeaveEntry }>("/records/leaves", {
+        method: "POST",
+        body: JSON.stringify({ type: leaveType, from, to }),
+      });
+      setLeaves((current) => [result.row, ...current]);
+      setFrom("");
+      setTo("");
+      toast.success("Leave request sent to Admin for approval");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Unable to submit leave request");
+    } finally {
+      setSubmittingLeave(false);
+    }
+  };
+
+  return (
+    <AppShell
+      title={`Hello, ${firstName}`}
+      subtitle="Your attendance and leave requests"
+    >
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Panel
+          title="Today's attendance"
+          action={
+            <Button className="erp-primary" disabled={punching} onClick={() => void punch()}>
+              {checkedIn ? "Check out" : "Check in"}
+            </Button>
+          }
+        >
+          <div className="flex items-center justify-between gap-4 py-2">
+            <div>
+              <p className="text-sm font-medium">{todayAttendance?.date ?? today}</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                In: {todayAttendance?.checkIn ?? "—"} · Out: {todayAttendance?.checkOut ?? "—"}
+              </p>
+            </div>
+            <Pill tone={checkedIn ? "success" : "muted"}>
+              {checkedIn ? "Checked in" : todayAttendance?.status ?? "Not checked in"}
+            </Pill>
+          </div>
+        </Panel>
+        <Panel title="Request leave">
+          <form onSubmit={(event) => void submitLeave(event)} className="grid gap-3 sm:grid-cols-2">
+            <label className="text-xs text-muted-foreground sm:col-span-2">
+              Leave type
+              <select
+                required
+                value={leaveType}
+                onChange={(event) => setLeaveType(event.target.value)}
+                className="mt-1.5 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground"
+              >
+                <option>Casual</option>
+                <option>Sick</option>
+                <option>Earned</option>
+              </select>
+            </label>
+            <label className="text-xs text-muted-foreground">
+              From
+              <input
+                required
+                type="date"
+                value={from}
+                onChange={(event) => setFrom(event.target.value)}
+                className="mt-1.5 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground"
+              />
+            </label>
+            <label className="text-xs text-muted-foreground">
+              To
+              <input
+                required
+                type="date"
+                min={from || undefined}
+                value={to}
+                onChange={(event) => setTo(event.target.value)}
+                className="mt-1.5 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground"
+              />
+            </label>
+            <div className="flex justify-end sm:col-span-2">
+              <Button type="submit" className="erp-primary" disabled={submittingLeave}>
+                {submittingLeave ? "Sending…" : "Send leave request"}
+              </Button>
+            </div>
+          </form>
+        </Panel>
+        <Panel title="Attendance history">
+          {loading ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">Loading attendance…</p>
+          ) : attendance.length ? (
+            <div className="overflow-x-auto">
+              <table className="erp-table">
+                <thead>
+                  <tr><th>Date</th><th>Check in</th><th>Check out</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  {attendance.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.date}</td>
+                      <td>{row.checkIn}</td>
+                      <td>{row.checkOut}</td>
+                      <td><Pill tone={row.status === "Present" ? "success" : "muted"}>{row.status}</Pill></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="py-6 text-center text-sm text-muted-foreground">No attendance records yet.</p>
+          )}
+        </Panel>
+        <Panel title="My leave requests">
+          {loading ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">Loading leave requests…</p>
+          ) : leaves.length ? (
+            <div className="overflow-x-auto">
+              <table className="erp-table">
+                <thead>
+                  <tr><th>Type</th><th>Dates</th><th>Days</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                  {leaves.map((row) => (
+                    <tr key={row.id}>
+                      <td>{row.type}</td>
+                      <td>{row.from} – {row.to}</td>
+                      <td>{row.days}</td>
+                      <td>
+                        <Pill
+                          tone={
+                            row.status === "Approved"
+                              ? "success"
+                              : row.status === "Cancelled" || row.status === "Rejected"
+                                ? "danger"
+                                : "warning"
+                          }
+                        >
+                          {row.status}
+                        </Pill>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="py-6 text-center text-sm text-muted-foreground">No leave requests yet.</p>
+          )}
+        </Panel>
+      </div>
+    </AppShell>
+  );
+}
+
 function Dashboard() {
   const [first, setFirst] = useState("Ishaan");
   const [data, setData] = useState<Dash>({
@@ -77,22 +316,42 @@ function Dashboard() {
     leaves: [],
     monthlySales: [],
     activities: [],
+    pendingMaterialRequests: 0,
   });
+  const isAdmin = readSession()?.user.role === "Admin";
+  const isEmployee = readSession()?.user.role === "Employee";
+  const requestOnly = ["Manager", "Employee"].includes(readSession()?.user.role ?? "");
   useEffect(() => {
+    if (requestOnly) return;
     let live = true;
     setFirst(readSession()?.user.name.split(" ")[0] ?? "Ishaan");
-    api<Dash>("/dashboard")
-      .then((next) => {
-        if (live) setData(next);
-      })
-      .catch((error: unknown) => {
-        toast.error(error instanceof Error ? error.message : "Unable to load the dashboard");
-      });
+    const load = () => {
+      api<Dash>("/dashboard")
+        .then((next) => {
+          if (live) setData(next);
+        })
+        .catch((error: unknown) => {
+          toast.error(error instanceof Error ? error.message : "Unable to load the dashboard");
+        });
+    };
+    load();
+    const refresh = isAdmin ? window.setInterval(load, 30000) : undefined;
     return () => {
       live = false;
+      if (refresh !== undefined) window.clearInterval(refresh);
     };
-  }, []);
-  const { materials, employees, vendors, customers, orders, leaves, monthlySales, activities } = data;
+  }, [isAdmin, requestOnly]);
+  const {
+    materials,
+    employees,
+    vendors,
+    customers,
+    orders,
+    leaves,
+    monthlySales,
+    activities,
+    pendingMaterialRequests,
+  } = data;
   const stock = materials.reduce((a, m) => a + m.stock * m.price, 0);
   const transit = materials.reduce((a, m) => a + m.transit * m.price, 0);
   const cats = Object.entries(
@@ -126,7 +385,17 @@ function Dashboard() {
       value: String(leaves.filter((l) => l.status === "Pending").length),
       icon: CalendarOff,
     },
+    ...(isAdmin
+      ? [
+          {
+            label: "Pending material requests",
+            value: String(pendingMaterialRequests),
+            icon: Inbox,
+          },
+        ]
+      : []),
   ];
+  if (isEmployee) return <EmployeeSelfServiceDashboard />;
   return (
     <AppShell title={`Good evening, ${first}`} subtitle="Here's what's moving across your yards today.">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

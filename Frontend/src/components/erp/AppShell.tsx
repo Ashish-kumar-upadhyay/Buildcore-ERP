@@ -1,7 +1,8 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { motion, AnimatePresence, MotionConfig, useReducedMotion } from "framer-motion";
 import { useEffect, useState, type ReactNode } from "react";
-import { clearSession, readSession, type SessionUser } from "@/lib/api";
+import { api, clearSession, readSession, type SessionUser } from "@/lib/api";
+import { toast } from "sonner";
 import {
   LayoutDashboard,
   Boxes,
@@ -17,6 +18,7 @@ import {
   Moon,
   ChevronDown,
   BarChart3,
+  ClipboardList,
   X,
   ArrowUpRight,
 } from "lucide-react";
@@ -33,6 +35,7 @@ const groups = [
     children: [
       { to: "/vendors", label: "Vendors" },
       { to: "/purchases", label: "Purchase orders" },
+      { to: "/notifications", label: "Material Requests" },
       { to: "/transactions", label: "Stock history" },
       { to: "/low-stock", label: "Low-stock alerts" },
     ],
@@ -65,7 +68,13 @@ const groups = [
   { label: "Reports", icon: BarChart3, to: "/reports", children: [] },
   { label: "Notifications", icon: Bell, to: "/notifications", children: [] },
 ] as const;
-const destinations = groups.flatMap((g) => [{ to: g.to, label: g.label }, ...g.children]);
+const requestOnlyGroups = [
+  { label: "Material Requests", icon: ClipboardList, to: "/notifications", children: [] },
+] as const;
+const employeeGroups = [
+  { label: "Dashboard", icon: LayoutDashboard, to: "/dashboard", children: [] },
+  { label: "Material Requests", icon: ClipboardList, to: "/notifications", children: [] },
+] as const;
 export function AppShell({
   title,
   subtitle,
@@ -82,7 +91,8 @@ export function AppShell({
   const [dark, setDark] = useState(false);
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<string[]>([]);
-  const [person, setPerson] = useState<SessionUser | null>(null);
+  const [person, setPerson] = useState<SessionUser | null>(() => readSession()?.user ?? null);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
   const nav = useNavigate();
   useEffect(() => {
     const session = readSession();
@@ -92,8 +102,57 @@ export function AppShell({
     }
     setPerson(session.user);
   }, [nav]);
+  useEffect(() => {
+    if (person?.role !== "Admin") return;
+    let active = true;
+    let errorShown = false;
+    const loadNotifications = () => {
+      void api<{ rows: { status: string }[] }>("/records/notifications")
+        .then(({ rows }) => {
+          if (!active) return;
+          setUnreadNotifications(rows.filter((item) => item.status === "Unread").length);
+          errorShown = false;
+        })
+        .catch((error: unknown) => {
+          if (active && !errorShown) {
+            toast.error(error instanceof Error ? error.message : "Unable to load notifications");
+            errorShown = true;
+          }
+        });
+    };
+    loadNotifications();
+    const refresh = window.setInterval(loadNotifications, 15000);
+    return () => {
+      active = false;
+      window.clearInterval(refresh);
+    };
+  }, [person?.role]);
   const reduced = useReducedMotion();
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const requestOnly = ["Manager", "Employee"].includes(person?.role ?? "");
+  const employeeOnly = person?.role === "Employee";
+  const visibleGroups = employeeOnly
+    ? employeeGroups
+    : requestOnly
+      ? requestOnlyGroups
+    : groups.map((group) => ({
+        ...group,
+        children: group.children.filter(
+          (child) => child.label !== "Material Requests" || person?.role === "Admin",
+        ),
+      }));
+  const destinations = visibleGroups.flatMap((group) => [
+    { to: group.to, label: group.label },
+    ...group.children,
+  ]);
+  const redirecting =
+    (person?.role === "Manager" && path !== "/notifications") ||
+    (employeeOnly && !["/dashboard", "/notifications"].includes(path));
+  useEffect(() => {
+    if (redirecting) {
+      void nav({ to: "/notifications", search: { tab: "requests" } });
+    }
+  }, [nav, redirecting]);
   const side = (compact: boolean) => (
     <div className="erp-sidebar-inner">
       <Link to="/" className="erp-brand">
@@ -117,7 +176,7 @@ export function AppShell({
         </div>
       )}
       <nav className="erp-nav" aria-label="ERP navigation">
-        {groups.map((g) => {
+        {visibleGroups.map((g) => {
           const active = path === g.to || g.children.some((c) => c.to === path);
           const open = expanded.includes(g.to) || active;
           return (
@@ -154,7 +213,13 @@ export function AppShell({
                     <Link
                       key={c.to}
                       to={c.to}
-                      onClick={() => setMobile(false)}
+                      onClick={(event) => {
+                        setMobile(false);
+                        if (c.label === "Material Requests") {
+                          event.preventDefault();
+                          void nav({ to: "/notifications", search: { tab: "requests" } });
+                        }
+                      }}
                       className={cn(path === c.to && "erp-subnav-active")}
                     >
                       {c.label}
@@ -253,30 +318,32 @@ export function AppShell({
             >
               <Menu />
             </Button>
-            <div className="erp-global-search">
-              <Search />
-              <input
-                aria-label="Search pages"
-                placeholder="Search your workspace…"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-              {search && (
-                <div className="erp-search-results">
-                  {destinations
-                    .filter((d) => d.label.toLowerCase().includes(search.toLowerCase()))
-                    .map((d) => (
-                      <Link key={d.to} to={d.to} onClick={() => setSearch("")}>
-                        {d.label}
-                        <ArrowUpRight />
-                      </Link>
-                    ))}
-                  {!destinations.some((d) =>
-                    d.label.toLowerCase().includes(search.toLowerCase()),
-                  ) && <p>No matching pages</p>}
-                </div>
-              )}
-            </div>
+            {!requestOnly && (
+              <div className="erp-global-search">
+                <Search />
+                <input
+                  aria-label="Search pages"
+                  placeholder="Search your workspace…"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+                {search && (
+                  <div className="erp-search-results">
+                    {destinations
+                      .filter((d) => d.label.toLowerCase().includes(search.toLowerCase()))
+                      .map((d) => (
+                        <Link key={d.to} to={d.to} onClick={() => setSearch("")}>
+                          {d.label}
+                          <ArrowUpRight />
+                        </Link>
+                      ))}
+                    {!destinations.some((d) =>
+                      d.label.toLowerCase().includes(search.toLowerCase()),
+                    ) && <p>No matching pages</p>}
+                  </div>
+                )}
+              </div>
+            )}
             <div className="ml-auto flex items-center gap-2">
               <div className="home-theme">
                 <Button
@@ -298,11 +365,22 @@ export function AppShell({
                   <Moon />
                 </Button>
               </div>
-              <Button asChild variant="ghost" size="icon" aria-label="View notifications">
-                <Link to="/notifications">
-                  <Bell />
-                </Link>
-              </Button>
+              {!requestOnly && (
+                <Button asChild variant="ghost" size="icon" aria-label="View notifications">
+                  <Link
+                    to="/notifications"
+                    search={{ tab: "notifications" }}
+                    className="relative"
+                  >
+                    <Bell />
+                    {person?.role === "Admin" && unreadNotifications > 0 && (
+                      <span className="absolute -right-1 -top-1 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[9px] font-semibold leading-none text-destructive-foreground">
+                        {unreadNotifications > 99 ? "99+" : unreadNotifications}
+                      </span>
+                    )}
+                  </Link>
+                </Button>
+              )}
               <div className="erp-user">
                 <span>
                   {(person?.name ?? "Ishaan Arora")
@@ -325,20 +403,24 @@ export function AppShell({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <div className="erp-page-heading">
-                <div>
-                  <p className="erp-breadcrumb">
-                    WORKSPACE /{" "}
-                    {groups
-                      .find((g) => path === g.to || g.children.some((c) => c.to === path))
-                      ?.label.toUpperCase() ?? "OVERVIEW"}
-                  </p>
-                  <h1>{title}</h1>
-                  {subtitle && <p className="erp-subtitle">{subtitle}</p>}
-                </div>
-                {actions}
-              </div>
-              {children}
+              {!redirecting && (
+                <>
+                  <div className="erp-page-heading">
+                    <div>
+                      <p className="erp-breadcrumb">
+                        WORKSPACE /{" "}
+                        {visibleGroups
+                          .find((g) => path === g.to || g.children.some((c) => c.to === path))
+                          ?.label.toUpperCase() ?? "OVERVIEW"}
+                      </p>
+                      <h1>{title}</h1>
+                      {subtitle && <p className="erp-subtitle">{subtitle}</p>}
+                    </div>
+                    {actions}
+                  </div>
+                  {children}
+                </>
+              )}
             </motion.div>
           </main>
           <footer className="erp-bottomline">

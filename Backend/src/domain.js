@@ -112,17 +112,22 @@ export async function notify({ title, user, category, tone, userRef }) {
   });
 }
 
-export async function bumpMonth(field, amount) {
+export async function bumpMonth(field, amount, session) {
   const label = new Date().toLocaleString("en-US", { month: "short" });
   const delta = Math.round((amount / 100000) * 100) / 100;
-  const row = await MonthlyStat.findOne({ m: label });
+  const query = MonthlyStat.findOne({ m: label });
+  if (session) query.session(session);
+  const row = await query;
   if (!row) {
     const sort = new Date().getMonth();
-    await MonthlyStat.create({ m: label, sales: 0, purchase: 0, sort, [field]: delta });
+    const data = { m: label, sales: 0, purchase: 0, sort, [field]: delta };
+    if (session) await MonthlyStat.create([data], { session });
+    else await MonthlyStat.create(data);
     return;
   }
   row[field] = Math.round((row[field] + delta) * 100) / 100;
-  await row.save();
+  if (session) await row.save({ session });
+  else await row.save();
 }
 
 async function stockTransaction({ material, direction, quantity, reference, user, userRef }) {
@@ -175,7 +180,6 @@ export async function applyStatusChange(name, doc, previous, user) {
     throw new HttpError(403, "Sales representatives can update their own orders");
   }
 
-  if (name === "purchases") await applyPurchase(doc, user);
   if (name === "sales-orders") await applySalesOrder(doc, user);
   if (name === "leaves" && doc.status === "Approved") {
     await notify({
@@ -210,44 +214,6 @@ export async function applyStatusChange(name, doc, previous, user) {
     });
   }
   return doc;
-}
-
-async function applyPurchase(doc, user) {
-  const material = await Material.findOne({ name: doc.material });
-  if (!material) return;
-  if (doc.status === "In transit" && !doc.transitApplied && !doc.receivedApplied) {
-    material.transit += doc.quantity;
-    doc.transitApplied = true;
-    await material.save();
-  }
-  if (doc.status === "Received" && !doc.receivedApplied) {
-    material.stock += doc.quantity;
-    if (doc.transitApplied) material.transit = Math.max(0, material.transit - doc.quantity);
-    doc.receivedApplied = true;
-    doc.transitApplied = false;
-    await material.save();
-    await stockTransaction({
-      material,
-      direction: "Stock in",
-      quantity: doc.quantity,
-      reference: doc.code,
-      user: user.name,
-      userRef: user._id,
-    });
-    await bumpMonth("purchase", doc.amount);
-    await notify({
-      title: `received ${doc.quantity} ${material.unit} ${material.name} (${doc.code})`,
-      user: user.name,
-      userRef: user._id,
-      category: "Inventory",
-      tone: "success",
-    });
-  }
-  if (doc.status === "Cancelled" && doc.transitApplied && !doc.receivedApplied) {
-    material.transit = Math.max(0, material.transit - doc.quantity);
-    doc.transitApplied = false;
-    await material.save();
-  }
 }
 
 async function applySalesOrder(doc, user) {
@@ -291,6 +257,29 @@ export function shape(name, doc) {
   const row = present(doc);
   if (name === "leads") row.stage = row.status;
   if (name === "low-stock") row.shortfall = Number(row.reorder) - Number(row.stock);
+  if (name === "purchases") {
+    const purchaseStatus = String(row.status);
+    const ordered = Number(row.quantity ?? 0);
+    let received = Number(row.receivedQuantity ?? 0);
+    if (row.status === "Received" && received === 0) received = ordered;
+    row.receivedQuantity = received;
+    row.pendingQuantity = Math.max(0, ordered - received);
+    row.purchaseEditable =
+      ["Draft", "Submitted", "Ordered", "In transit"].includes(purchaseStatus) &&
+      received === 0 &&
+      !row.transitApplied &&
+      !row.receivedApplied
+        ? "true"
+        : "false";
+    if (["Ordered", "In transit"].includes(purchaseStatus)) {
+      row.status =
+        received >= ordered && ordered > 0
+          ? "Received"
+          : received > 0
+            ? "Partially Received"
+            : "Submitted";
+    }
+  }
   for (const key of Object.keys(row)) {
     if (key.endsWith("Ref") || key.endsWith("Applied") || ["lines", "stockApplied", "createdAt", "updatedAt", "passwordHash"].includes(key)) {
       delete row[key];

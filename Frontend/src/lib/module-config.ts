@@ -74,12 +74,14 @@ export const moduleConfigs: Record<string, ModuleConfig> = {
     columns: [
       c("vendor", "Vendor"),
       c("material", "Material"),
-      c("quantity", "Quantity", "number"),
+      c("quantity", "Ordered", "number"),
+      c("receivedQuantity", "Received", "number"),
+      c("pendingQuantity", "Pending", "number"),
       c("amount", "Amount", "money"),
       c("date", "Order date", "date"),
-      status(["Draft", "Ordered", "In transit", "Received", "Cancelled"]),
+      status(["Draft", "Submitted", "Partially Received", "Received", "Cancelled"]),
     ],
-    workflow: ["Draft", "Ordered", "In transit", "Received"],
+    workflow: ["Draft", "Submitted"],
   },
   transactions: {
     title: "Stock history",

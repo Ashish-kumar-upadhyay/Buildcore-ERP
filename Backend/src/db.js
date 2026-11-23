@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoMemoryReplSet } from "mongodb-memory-server";
 
 let memory = null;
 
@@ -10,8 +10,9 @@ export async function connectDatabase() {
   if (!uri) {
     const dbPath = path.resolve(process.env.MONGO_DATA_PATH || "data/mongo");
     fs.mkdirSync(dbPath, { recursive: true });
-    memory = await MongoMemoryServer.create({
-      instance: { dbPath, storageEngine: "wiredTiger" },
+    memory = await MongoMemoryReplSet.create({
+      replSet: { count: 1 },
+      instanceOpts: [{ dbPath, storageEngine: "wiredTiger" }],
       binary: { version: "7.0.14" },
     });
     uri = memory.getUri("buildcore");

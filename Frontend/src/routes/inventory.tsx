@@ -7,7 +7,7 @@ import { Plus, Search, ArrowDownToLine, ArrowUpFromLine, Trash2, Pencil } from "
 import { toast } from "sonner";
 import { AppShell, Panel, Pill } from "@/components/erp/AppShell";
 import { materials as catalog, inr, type Material } from "@/lib/mock-data";
-import { api } from "@/lib/api";
+import { api, readSession } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { Field, Modal } from "@/components/erp/Modal";
 
@@ -35,7 +35,9 @@ const PAGE = 6;
 
 function Inventory() {
   const [items, setItems] = useState<Material[]>([]);
+  const requestOnly = ["Manager", "Employee"].includes(readSession()?.user.role ?? "");
   useEffect(() => {
+    if (requestOnly) return;
     let live = true;
     api<{ rows: Material[] }>("/materials")
       .then((data) => {
@@ -47,7 +49,7 @@ function Inventory() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [requestOnly]);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const [page, setPage] = useState(0);

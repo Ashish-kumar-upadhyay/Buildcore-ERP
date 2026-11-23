@@ -41,7 +41,9 @@ function Hrms() {
   const [leaves, setLeaves] = useState<Leave[]>([]);
   const [exp, setExp] = useState<Expense[]>([]);
   const [checkedIn, setCheckedIn] = useState<Date | null>(null);
+  const requestOnly = ["Manager", "Employee"].includes(readSession()?.user.role ?? "");
   useEffect(() => {
+    if (requestOnly) return;
     let live = true;
     api<{
       employees: Staff[];
@@ -62,7 +64,7 @@ function Hrms() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [requestOnly]);
   const [now, setNow] = useState<Date | null>(null);
   const [open, setOpen] = useState(false);
   useEffect(() => {

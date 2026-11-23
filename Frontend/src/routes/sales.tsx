@@ -8,7 +8,7 @@ import { IndianRupee, ShoppingCart, Target, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell, Panel, Pill, StatCard } from "@/components/erp/AppShell";
 import { inr, type OrderStatus } from "@/lib/mock-data";
-import { api } from "@/lib/api";
+import { api, readSession } from "@/lib/api";
 
 type Order = {
   id: string;
@@ -55,7 +55,9 @@ function Sales() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [monthlySales, setMonthlySales] = useState<Month[]>([]);
   const [filter, setFilter] = useState<OrderStatus | "All">("All");
+  const requestOnly = ["Manager", "Employee"].includes(readSession()?.user.role ?? "");
   useEffect(() => {
+    if (requestOnly) return;
     let live = true;
     api<{ orders: Order[]; leads: Lead[]; monthlySales: Month[] }>("/sales/overview")
       .then((data) => {
@@ -70,7 +72,7 @@ function Sales() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [requestOnly]);
   const advance = (id: string) => {
     const order = orders.find((item) => item.id === id);
     if (!order) return;

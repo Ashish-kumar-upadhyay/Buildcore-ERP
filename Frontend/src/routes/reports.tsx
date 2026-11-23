@@ -17,7 +17,7 @@ import { AppShell, Panel, StatCard } from "@/components/erp/AppShell";
 import { Button } from "@/components/ui/button";
 import { downloadCsv } from "@/components/erp/RecordsPage";
 import { inr } from "@/lib/mock-data";
-import { api } from "@/lib/api";
+import { api, readSession } from "@/lib/api";
 
 type Month = { m: string; sales: number; purchase: number };
 type StockRow = { category: string; stock: number; price: number };
@@ -52,7 +52,9 @@ function Reports() {
   const [monthlySales, setMonthlySales] = useState<Month[]>([]);
   const [materials, setMaterials] = useState<StockRow[]>([]);
   const [employees, setEmployees] = useState<Person[]>([]);
+  const requestOnly = ["Manager", "Employee"].includes(readSession()?.user.role ?? "");
   useEffect(() => {
+    if (requestOnly) return;
     let live = true;
     api<{ monthlySales: Month[]; materials: StockRow[]; employees: Person[] }>("/reports?months=12")
       .then((data) => {
@@ -67,7 +69,7 @@ function Reports() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [requestOnly]);
   const sales = monthlySales.slice(-Number(period));
   const stock = Object.entries(
     materials.reduce<Record<string, number>>(

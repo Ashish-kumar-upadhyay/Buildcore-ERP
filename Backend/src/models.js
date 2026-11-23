@@ -19,6 +19,14 @@ const base = {
 
 const code = { type: String, required: true, unique: true, trim: true };
 
+export const Counter = mongoose.model(
+  "Counter",
+  new mongoose.Schema({
+    name: { type: String, required: true, unique: true },
+    value: { type: Number, required: true },
+  }),
+);
+
 export const User = mongoose.model(
   "User",
   new mongoose.Schema(
@@ -36,6 +44,7 @@ export const User = mongoose.model(
           "HR Manager",
           "Inventory Manager",
           "Sales Manager",
+          "Manager",
           "Employee",
           "Sales Rep",
         ],
@@ -69,6 +78,7 @@ export const Employee = mongoose.model(
     {
       code,
       name: { type: String, required: true, trim: true },
+      loginId: { type: String, unique: true, sparse: true, trim: true },
       role: { type: String, default: "" },
       dept: { type: String, default: "" },
       departmentRef: { type: mongoose.Schema.Types.ObjectId, ref: "Department" },
@@ -130,6 +140,32 @@ export const Material = mongoose.model(
   ),
 );
 
+export const MaterialRequest = mongoose.model(
+  "MaterialRequest",
+  new mongoose.Schema(
+    {
+      code,
+      requesterRef: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+      requesterName: { type: String, required: true, trim: true },
+      employeeCode: { type: String, default: "" },
+      company: { type: String, required: true, trim: true },
+      materialRef: { type: mongoose.Schema.Types.ObjectId, ref: "Material" },
+      material: { type: String, required: true, trim: true },
+      quantity: { type: Number, required: true, min: 0.001 },
+      unit: { type: String, default: "pcs", trim: true },
+      notes: { type: String, default: "", trim: true },
+      status: {
+        type: String,
+        enum: ["Pending", "Approved", "Cancelled"],
+        default: "Pending",
+      },
+      reviewedBy: { type: String, default: "" },
+      reviewedAt: { type: Date },
+    },
+    base,
+  ),
+);
+
 export const Purchase = mongoose.model(
   "Purchase",
   new mongoose.Schema(
@@ -140,11 +176,33 @@ export const Purchase = mongoose.model(
       material: { type: String, required: true },
       materialRef: { type: mongoose.Schema.Types.ObjectId, ref: "Material" },
       quantity: { type: Number, required: true },
+      receivedQuantity: { type: Number, default: 0, min: 0 },
       amount: { type: Number, required: true },
       date: { type: String, default: "" },
       status: { type: String, default: "Draft" },
       transitApplied: { type: Boolean, default: false },
       receivedApplied: { type: Boolean, default: false },
+    },
+    base,
+  ),
+);
+
+export const GoodsReceipt = mongoose.model(
+  "GoodsReceipt",
+  new mongoose.Schema(
+    {
+      code,
+      requestId: { type: String, required: true, unique: true, trim: true },
+      purchaseCode: { type: String, required: true },
+      purchaseRef: { type: mongoose.Schema.Types.ObjectId, ref: "Purchase", required: true, index: true },
+      vendor: { type: String, required: true },
+      material: { type: String, required: true },
+      materialRef: { type: mongoose.Schema.Types.ObjectId, ref: "Material", required: true },
+      quantity: { type: Number, required: true, min: 0 },
+      date: { type: String, required: true },
+      notes: { type: String, default: "" },
+      user: { type: String, default: "" },
+      userRef: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },
     base,
   ),
