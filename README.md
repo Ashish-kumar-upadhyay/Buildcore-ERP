@@ -1,162 +1,190 @@
 <div align="center">
 
-<!-- BuildCore ERP: keep the project name as real Markdown text so it remains visible
-     even if an external banner, SVG, or badge fails to load. -->
+<img src="./assets/buildcore-hero.svg" alt="BuildCore ERP — Strong foundations. Smarter business." width="100%"/>
 
-<h1>🏗️ BuildCore ERP</h1>
+# 🏗️ BuildCore ERP
 
 ### Strong foundations. Smarter business.
 
-<p>
-  <strong>A connected workspace for construction-material businesses.</strong><br/>
-  Manage inventory, purchasing, sales, people, and material requests in one place.
-</p>
+**A unified workspace for construction and building-material operations.**
 
 <p>
-  <a href="https://erp-build-two.vercel.app/"><strong>🚀 Open Live Application</strong></a>
-  &nbsp; • &nbsp;
-  <a href="https://buildcore-erp-1.onrender.com/"><strong>⚙️ Backend Service</strong></a>
-  &nbsp; • &nbsp;
-  <a href="https://github.com/Ashish-kumar-upadhyay/Buildcore-ERP"><strong>💻 Source Code</strong></a>
+  <a href="https://erp-build-two.vercel.app/">
+    <img src="https://img.shields.io/badge/🚀_LIVE_APPLICATION-Open_BuildCore-171717?style=for-the-badge&labelColor=E6A000" alt="Open live application"/>
+  </a>
+  <a href="https://buildcore-erp-1.onrender.com/">
+    <img src="https://img.shields.io/badge/API_BACKEND-Render-171717?style=for-the-badge&labelColor=7C3AED" alt="Backend service"/>
+  </a>
+  <a href="https://github.com/Ashish-kumar-upadhyay/Buildcore-ERP">
+    <img src="https://img.shields.io/badge/SOURCE_CODE-GitHub-171717?style=for-the-badge&logo=github" alt="GitHub repository"/>
+  </a>
 </p>
 
-<img
-  src="https://readme-typing-svg.demolab.com?font=Inter&weight=600&size=22&duration=2800&pause=900&color=E6A000&center=true&vCenter=true&width=700&lines=One+workspace.+Every+part+of+your+day.;Inventory+%E2%80%A2+Purchasing+%E2%80%A2+Sales;People+%26+HR+%E2%80%A2+Material+Requests;Built+for+construction+operations."
-  alt="BuildCore ERP animated tagline"
-/>
+<img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=21&duration=2600&pause=850&color=E6A000&center=true&vCenter=true&width=760&lines=One+workspace.+Every+part+of+your+day.;Smarter+inventory+and+material+visibility.;Clear+roles.+Controlled+access.;From+material+request+to+admin+approval." alt="Animated BuildCore ERP tagline"/>
 
 <br/>
 
-<img src="https://img.shields.io/badge/PROJECT-BUILDCORE%20ERP-E6A000?style=for-the-badge&labelColor=171717" alt="Project BuildCore ERP"/>
-<img src="https://img.shields.io/badge/PLATFORM-WEB%20ERP-2563EB?style=for-the-badge&labelColor=171717" alt="Web ERP"/>
-<img src="https://img.shields.io/badge/INDUSTRY-CONSTRUCTION-16A34A?style=for-the-badge&labelColor=171717" alt="Construction industry"/>
+<img src="https://img.shields.io/badge/INVENTORY-E6A000?style=flat-square&labelColor=171717" alt="Inventory"/>
+<img src="https://img.shields.io/badge/PURCHASING-E6A000?style=flat-square&labelColor=171717" alt="Purchasing"/>
+<img src="https://img.shields.io/badge/SALES-E6A000?style=flat-square&labelColor=171717" alt="Sales"/>
+<img src="https://img.shields.io/badge/PEOPLE_%26_HR-E6A000?style=flat-square&labelColor=171717" alt="People and HR"/>
+<img src="https://img.shields.io/badge/MATERIAL_REQUESTS-E6A000?style=flat-square&labelColor=171717" alt="Material requests"/>
 
 </div>
 
 ---
 
-## ✨ About BuildCore ERP
+## ⚡ The idea
 
-**BuildCore ERP** is a web-based business management workspace designed for construction and building-material operations. It brings day-to-day workflows together so teams can keep materials, people, requests, and business activity organized.
+Construction operations involve materials, stock, purchasing, teams, and orders. When these activities are scattered across different tools, it becomes harder to track what is happening and who is responsible.
 
-The goal is simple: reduce scattered work, make responsibilities clear, and give each role access only to the tools it needs.
+**BuildCore ERP brings these workflows into one organized workspace** with role-based access and a clear material-request approval process.
 
-## 🔗 Project Links
+> **One workspace. Clear responsibilities. Better control.**
 
-| Resource | Link |
-|---|---|
-| **Primary live application** | [erp-build-two.vercel.app](https://erp-build-two.vercel.app/) |
-| **Backend service** | [buildcore-erp-1.onrender.com](https://buildcore-erp-1.onrender.com/) |
-| **GitHub repository** | [Ashish-kumar-upadhyay/Buildcore-ERP](https://github.com/Ashish-kumar-upadhyay/Buildcore-ERP) |
-
-> **Deployment note:** The backend is hosted on Render's free instance. After inactivity, its first request may take around 50 seconds or longer while the service wakes up.
-
-## 🚀 Key Modules
+## 🎯 Explore the workspace
 
 <table>
-  <tr>
-    <td width="50%">
-      <h3>📦 Inventory</h3>
-      Organize building materials and keep stock information accessible.
-    </td>
-    <td width="50%">
-      <h3>🛒 Purchasing</h3>
-      Support purchase and vendor-related workflows.
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3>📈 Sales</h3>
-      Keep sales and order activity within the same workspace.
-    </td>
-    <td width="50%">
-      <h3>👥 People & HR</h3>
-      Manage employee records and role-based workspaces.
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <h3>🧱 Material Requests</h3>
-      Employees can submit material requirements for an assigned company and track the request status.
-    </td>
-    <td width="50%">
-      <h3>✅ Admin Approval</h3>
-      Admins can review submitted material requests and approve or reject them.
-    </td>
-  </tr>
+<tr>
+<td width="50%" valign="top">
+
+### 📦 Inventory
+Keep building-material stock information organized and accessible.
+
+</td>
+<td width="50%" valign="top">
+
+### 🛒 Purchasing
+Support purchase and vendor-related business workflows.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 📊 Sales
+Keep sales and order activity connected to daily operations.
+
+</td>
+<td width="50%" valign="top">
+
+### 👥 People & HR
+Manage employee records and role-based workspaces.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 🧱 Material Requests
+Employees can request materials for their assigned company, with quantity and required date.
+
+</td>
+<td width="50%" valign="top">
+
+### 🛡️ Admin Approval
+Admins can review incoming requests and approve or reject them.
+
+</td>
+</tr>
 </table>
 
-## 🔐 Role-Based Access
+## 🔐 Designed around roles
 
-BuildCore ERP separates access by role to keep each workspace focused.
+BuildCore ERP keeps employee access limited to the work they need to perform.
 
-| Role | Access |
+| Admin workspace | Employee / Manager workspace |
 |---|---|
-| **Admin** | Manages the workspace, employee access, and material-request approvals. |
-| **Manager / Employee** | Uses the assigned workspace, views relevant product/stock information, submits material requests, and checks request status. |
+| Add and manage employees | Sign in using a unique ERP code and password |
+| Assign users to a company | View their assigned company |
+| Review material requests | View relevant product and stock information |
+| Approve or reject requests | Submit material requests |
+| Manage administrative workflows | Track the status of their own requests |
 
-### Material Request Workflow
+### 🔄 Material request journey
 
 ```mermaid
 flowchart TD
-    A[Admin creates a user] --> B[User receives unique ERP code and password]
-    B --> C[User signs in]
-    C --> D[User views assigned company and available stock]
-    D --> E[User submits material request]
-    E --> F[Request appears in Admin workspace]
-    F --> G{Admin decision}
-    G -->|Approve| H[Status: Approved]
-    G -->|Reject| I[Status: Rejected]
-    H --> J[User checks updated request status]
+    A["Admin creates employee / manager account"] --> B["Unique ERP code and password are shared"]
+    B --> C["User signs in"]
+    C --> D["Assigned company and permitted stock view"]
+    D --> E["Submit material request"]
+    E --> F["Request reaches Admin"]
+    F --> G{"Admin reviews request"}
+    G -->|Approve| H["Approved"]
+    G -->|Reject| I["Rejected"]
+    H --> J["User checks request status"]
     I --> J
 ```
 
-## 🧭 Current Feature Status
+## 🧩 Feature progress
 
-The checklist below distinguishes implemented workflows from items still planned. Update it as development progresses.
+| Feature | Status |
+|---|:---:|
+| Admin employee creation | ✅ |
+| Unique ERP login code and password | ✅ |
+| Role-based employee access restrictions | ✅ |
+| Assigned-company visibility | ✅ |
+| Employee material-request submission | ✅ |
+| Employee request-status tracking | ✅ |
+| Admin request review and approval / rejection | ✅ |
+| Attendance check-in / check-out | 🚧 Planned |
+| Leave request and approval | 🚧 Planned |
+| GPS-based attendance verification | 🚧 Planned |
+| Expanded reports and operational insights | 🚧 Planned |
 
-- [x] Admin can add employees.
-- [x] Unique ERP login code and password flow.
-- [x] Role-based employee workspace restrictions.
-- [x] Assigned-company visibility for employees.
-- [x] Employee material-request submission.
-- [x] Employee can view their own request status.
-- [x] Admin can review and approve/reject material requests.
-- [ ] Attendance check-in / check-out.
-- [ ] Leave request and approval workflow.
-- [ ] GPS-based attendance verification.
-- [ ] Expanded reports and operational insights.
+## 🌐 Deployments
 
-## 🖥️ Interface
+<div align="center">
 
-BuildCore ERP uses a clean construction-business visual direction with warm amber accents, neutral surfaces, and focused workspace sections.
+| Environment | URL |
+|---|---|
+| **Frontend / Live Application** | [Launch BuildCore ERP ↗](https://erp-build-two.vercel.app/) |
+| **Backend / API Service** | [Open Render Service ↗](https://buildcore-erp-1.onrender.com/) |
+| **Source Repository** | [View on GitHub ↗](https://github.com/Ashish-kumar-upadhyay/Buildcore-ERP) |
 
-## 🛠️ Run Locally
+</div>
 
-1. Clone the repository:
+> **Heads-up:** The backend currently uses Render's free instance. It may spin down after inactivity, so the first request after a quiet period can take around 50 seconds or more.
 
-   ```bash
-   git clone https://github.com/Ashish-kumar-upadhyay/Buildcore-ERP.git
-   cd Buildcore-ERP
-   ```
+## 🧑‍💻 Run locally
 
-2. Install dependencies in the relevant application folders:
+### 1. Clone the repository
 
-   ```bash
-   npm install
-   ```
+```bash
+git clone https://github.com/Ashish-kumar-upadhyay/Buildcore-ERP.git
+cd Buildcore-ERP
+```
 
-3. Configure the environment variables required by the project. Keep secrets in local environment files and never commit credentials.
+### 2. Install dependencies
 
-4. Start the application using the scripts defined in the relevant `package.json`:
+Run the following in the relevant frontend and backend project directories:
 
-   ```bash
-   npm run dev
-   ```
+```bash
+npm install
+```
 
-> If the repository contains separate frontend and backend folders, install dependencies and run the development script in each folder. Check each folder's `package.json` for the exact available scripts and required environment variables.
+### 3. Configure environment variables
 
-## 👨‍💻 Developer
+Create the required local environment file(s) using the variable names expected by the project. Add database connection details and other required configuration locally.
+
+**Never commit passwords, API keys, database credentials, or production secrets.**
+
+### 4. Start the development server
+
+Use the script defined in the relevant `package.json`:
+
+```bash
+npm run dev
+```
+
+> If frontend and backend are separate applications, start each from its own directory. Refer to their `package.json` files for the exact scripts and required environment variables.
+
+## 🧰 Built with
+
+The project uses a web application frontend and a separately deployed backend service. For the exact framework, libraries, and versions, refer to the repository's package manifests.
+
+## 👨‍🚀 Project creator
 
 <div align="center">
 
@@ -164,11 +192,13 @@ BuildCore ERP uses a clean construction-business visual direction with warm ambe
 
 **Full Stack Developer**
 
-[![GitHub](https://img.shields.io/badge/GitHub-Ashish--kumar--upadhyay-181717?style=for-the-badge&logo=github)](https://github.com/Ashish-kumar-upadhyay)
+<a href="https://github.com/Ashish-kumar-upadhyay">
+  <img src="https://img.shields.io/badge/GitHub-Follow%20my%20work-171717?style=for-the-badge&logo=github" alt="GitHub profile"/>
+</a>
 
-<br/>
+<br/><br/>
 
-*Built to connect construction business operations.*
+*Building practical software for real-world business workflows.*
 
 </div>
 
@@ -176,8 +206,8 @@ BuildCore ERP uses a clean construction-business visual direction with warm ambe
 
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=rect&color=0:171717,50:9A6500,100:E6A000&height=3&section=footer" width="100%" alt=""/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:171717,50:8B5E00,100:E6A000&height=140&section=footer&text=BUILDCORE%20ERP&fontSize=30&fontColor=FFF8E8&fontAlignY=65&animation=fadeIn" width="100%" alt="BuildCore ERP footer banner"/>
 
-**BUILDCORE ERP** · Strong foundations. Smarter business.
+**STRONG FOUNDATIONS. SMARTER BUSINESS.**
 
 </div>

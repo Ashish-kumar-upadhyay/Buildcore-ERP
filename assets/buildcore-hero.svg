@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="60" y1="30" x2="1120" y2="490" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#171717"/>
+      <stop offset=".55" stop-color="#24211B"/>
+      <stop offset="1" stop-color="#3A2A0C"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="100" y1="80" x2="1080" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE7A3"/>
+      <stop offset=".48" stop-color="#F5B51B"/>
+      <stop offset="1" stop-color="#D98200"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F5B51B" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#FFF4D4" stop-opacity=".7"/>
+      <stop offset="1" stop-color="#F5B51B" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#000" flood-opacity=".35"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="500" rx="30" fill="url(#bg)"/>
+  <circle cx="950" cy="240" r="190" fill="#E6A000" opacity=".10" filter="url(#glow)"/>
+  <circle cx="108" cy="52" r="2" fill="#F5B51B"/>
+  <circle cx="180" cy="420" r="3" fill="#F5B51B" opacity=".7"/>
+  <circle cx="720" cy="80" r="2" fill="#F5B51B"/>
+  <circle cx="1110" cy="400" r="3" fill="#F5B51B"/>
+
+  <g opacity=".12" stroke="#F7D98A">
+    <path d="M0 110H1200M0 190H1200M0 270H1200M0 350H1200M0 430H1200"/>
+    <path d="M120 0V500M240 0V500M360 0V500M480 0V500M600 0V500M720 0V500M840 0V500M960 0V500M1080 0V500"/>
+  </g>
+
+  <g transform="translate(76 72)">
+    <rect width="48" height="48" rx="14" fill="#F5B51B"/>
+    <path d="M12 35V17L24 10L36 17V35H28V25H20V35H12Z" stroke="#171717" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M18 19H21M27 19H30" stroke="#171717" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <text x="142" y="105" fill="#FFF8E8" font-family="Inter,Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="3">CONSTRUCTION BUSINESS WORKSPACE</text>
+  <text x="76" y="220" fill="#FFF8E8" font-family="Inter,Arial,sans-serif" font-size="76" font-weight="800" letter-spacing="-3">BUILDCORE</text>
+  <text x="76" y="300" fill="url(#gold)" font-family="Inter,Arial,sans-serif" font-size="76" font-weight="800" letter-spacing="-3">ERP.</text>
+  <rect x="78" y="326" width="420" height="3" rx="2" fill="url(#shine)">
+    <animate attributeName="x" values="78;430;78" dur="5s" repeatCount="indefinite"/>
+  </rect>
+  <text x="80" y="374" fill="#F5F0E5" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="600">Strong foundations. Smarter business.</text>
+  <text x="80" y="414" fill="#BDB6A8" font-family="Inter,Arial,sans-serif" font-size="16">Inventory  ·  Purchasing  ·  Sales  ·  People  ·  Material Requests</text>
+
+  <g transform="translate(790 90)" filter="url(#shadow)">
+    <ellipse cx="160" cy="205" rx="205" ry="72" stroke="#E7A916" stroke-width="2" opacity=".6" transform="rotate(-18 160 205)">
+      <animateTransform attributeName="transform" type="rotate" from="-18 160 205" to="342 160 205" dur="24s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="160" cy="205" rx="205" ry="72" stroke="#F9D77B" stroke-width="1.4" opacity=".35" transform="rotate(48 160 205)"/>
+    <g>
+      <g transform="translate(74 28)">
+        <rect x="0" y="0" width="86" height="48" rx="11" fill="#F5B51B"/>
+        <rect x="94" y="0" width="86" height="48" rx="11" fill="#777E8A"/>
+        <rect x="188" y="0" width="68" height="48" rx="11" fill="#454B57"/>
+      </g>
+      <g transform="translate(44 84)">
+        <rect x="0" y="0" width="86" height="48" rx="11" fill="#777E8A"/>
+        <rect x="94" y="0" width="86" height="48" rx="11" fill="#F5B51B"/>
+        <rect x="188" y="0" width="86" height="48" rx="11" fill="#777E8A"/>
+      </g>
+      <g transform="translate(66 140)">
+        <rect x="0" y="0" width="86" height="48" rx="11" fill="#454B57"/>
+        <rect x="94" y="0" width="86" height="48" rx="11" fill="#777E8A"/>
+        <rect x="188" y="0" width="86" height="48" rx="11" fill="#F5B51B"/>
+      </g>
+      <g transform="translate(36 196)">
+        <rect x="0" y="0" width="86" height="48" rx="11" fill="#F5B51B"/>
+        <rect x="94" y="0" width="86" height="48" rx="11" fill="#454B57"/>
+        <rect x="188" y="0" width="86" height="48" rx="11" fill="#777E8A"/>
+      </g>
+      <g transform="translate(64 252)">
+        <rect x="0" y="0" width="86" height="48" rx="11" fill="#777E8A"/>
+        <rect x="94" y="0" width="86" height="48" rx="11" fill="#F5B51B"/>
+        <rect x="188" y="0" width="86" height="48" rx="11" fill="#454B57"/>
+      </g>
+    </g>
+    <animateTransform attributeName="transform" additive="sum" type="translate" values="0 0;0 -10;0 0" dur="5s" repeatCount="indefinite"/>
+  </g>
+
+  <rect x="1" y="1" width="1198" height="498" rx="29" stroke="#F5B51B" stroke-opacity=".28" stroke-width="2"/>
+  <rect x="0" y="0" width="1200" height="7" rx="3" fill="url(#gold)" opacity=".9"/>
+</svg>
