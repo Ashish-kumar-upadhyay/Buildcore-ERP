@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Field } from "@/components/erp/Modal";
 import type { DemoRecord, Material } from "@/lib/mock-data";
 
@@ -54,44 +61,49 @@ export function PurchaseOrderForm({
     >
       <label className="text-xs text-muted-foreground">
         Vendor
-        <select
+        <Select
           required
           name="vendor"
           value={vendor}
           disabled={unavailable}
-          onChange={(event) => setVendor(event.target.value)}
-          className="erp-select mt-1.5 w-full"
+          onValueChange={setVendor}
         >
-          <option value="">{loading ? "Loading vendors…" : "Select a vendor"}</option>
-          {vendors.map((row) => (
-            <option key={row.id} value={String(row["name"])}>
-              {row["name"]}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger aria-label="Vendor" className="erp-select mt-1.5 w-full">
+            <SelectValue placeholder={loading ? "Loading vendors…" : "Select a vendor"} />
+          </SelectTrigger>
+          <SelectContent>
+            {vendors.map((row) => (
+              <SelectItem key={row.id} value={String(row["name"])}>
+                {row["name"]}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </label>
       <label className="text-xs text-muted-foreground">
         Material
-        <select
+        <Select
           required
           name="material"
           value={materialName}
           disabled={unavailable}
-          onChange={(event) => {
-            const name = event.target.value;
+          onValueChange={(name) => {
             const material = materials.find((row) => row.name === name);
             setMaterialName(name);
             if (material) setAmount(String(material.price * Number(quantity || 0)));
           }}
-          className="erp-select mt-1.5 w-full"
         >
-          <option value="">{loading ? "Loading materials…" : "Select a material"}</option>
-          {materials.map((material) => (
-            <option key={material.id} value={material.name}>
-              {material.name}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger aria-label="Material" className="erp-select mt-1.5 w-full">
+            <SelectValue placeholder={loading ? "Loading materials…" : "Select a material"} />
+          </SelectTrigger>
+          <SelectContent>
+            {materials.map((material) => (
+              <SelectItem key={material.id} value={material.name}>
+                {material.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </label>
       {selectedVendor && (
         <p className="text-xs text-muted-foreground sm:col-span-2">

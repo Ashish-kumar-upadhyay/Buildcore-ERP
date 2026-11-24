@@ -24,13 +24,14 @@ import {
   Check,
   Menu,
   X,
+  Activity,
   Sparkles,
+  ChevronDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import team from "@/assets/download.png";
+import constructionHero from "@/assets/construction-hero.jpg";
 import { readSession } from "@/lib/api";
-import { ClientScene } from "@/components/three/ClientScene";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -100,10 +101,16 @@ const workflow = [
 ] as const;
 
 const stats = [
-  { value: 300, suffix: "+", label: "SKUs in one yard view" },
-  { value: 17, suffix: "%", label: "Clearer month-on-month sales" },
-  { value: 1, suffix: "", label: "Workspace for every team" },
-  { value: 24, suffix: "/7", label: "Stock, people and orders" },
+  { icon: Boxes, value: 300, suffix: "+", label: "SKUs tracked" },
+  { icon: TrendingUp, value: 17, suffix: "%", label: "Higher sales" },
+  { icon: Users, value: 24, suffix: "/7", label: "Team & orders" },
+] as const;
+
+const liveMetrics = [
+  { icon: Boxes, label: "Stock", value: "14.2L", change: "+12%" },
+  { icon: Truck, label: "Orders", value: "32", change: "+8%" },
+  { icon: Users, label: "Team", value: "18", change: "Active" },
+  { icon: TrendingUp, label: "Sales", value: "₹8.7L", change: "+17%" },
 ] as const;
 
 function CountUp({ to, suffix }: { to: number; suffix: string }) {
@@ -145,8 +152,8 @@ function Home() {
   const [menu, setMenu] = useState(false);
   const pointerX = useMotionValue(50);
   const pointerY = useMotionValue(40);
-  const glowX = useSpring(pointerX, { stiffness: 80, damping: 20 });
-  const glowY = useSpring(pointerY, { stiffness: 80, damping: 20 });
+  const glowX = useSpring(pointerX, { stiffness: 70, damping: 24, mass: 0.8 });
+  const glowY = useSpring(pointerY, { stiffness: 70, damping: 24, mass: 0.8 });
   const spotlightX = useTransform(glowX, (value) => `${value}%`);
   const spotlightY = useTransform(glowY, (value) => `${value}%`);
 
@@ -158,6 +165,7 @@ function Home() {
   };
 
   const moveGlow = (event: MouseEvent<HTMLElement>) => {
+    if (reduced) return;
     const rect = event.currentTarget.getBoundingClientRect();
     pointerX.set(((event.clientX - rect.left) / rect.width) * 100);
     pointerY.set(((event.clientY - rect.top) / rect.height) * 100);
@@ -174,19 +182,17 @@ function Home() {
     <div className={`home-page ${dark ? "login-night" : ""}`}>
       <header className="home-header home-header-sticky">
         <Link to="/" className="login-brand home-brand">
-          <motion.div whileHover={{ scale: 1.04 }} transition={{ type: "spring", stiffness: 400 }}>
-            <Building2 />
-            <div>
-              <p>
-                BUILDCORE <span>ERP</span>
-              </p>
-              <small>Smart Construction. Smarter Management.</small>
-            </div>
-          </motion.div>
+          <Building2 />
+          <div>
+            <p>
+              BUILDCORE <span>ERP</span>
+            </p>
+            <small>Smart Construction. Smarter Management.</small>
+          </div>
         </Link>
         <nav className="home-links" aria-label="Main navigation">
-          {["Workspace", "Overview", "About", "Sign in"].map((item) => (
-            <a key={item} href={item === "Sign in" ? "/login" : `#${item.toLowerCase()}`}>
+          {["Workspace", "Overview", "Features", "About"].map((item) => (
+            <a key={item} href={`#${item.toLowerCase()}`}>
               {item}
             </a>
           ))}
@@ -200,6 +206,9 @@ function Home() {
               <Moon />
             </Button>
           </div>
+          <Button asChild variant="outline" className="home-secondary home-header-signin">
+            <Link to="/login">Sign in</Link>
+          </Button>
           <Button asChild className="home-primary home-header-cta">
             <Link to="/login">
               Start workspace
@@ -223,11 +232,12 @@ function Home() {
           <motion.nav
             className="home-mobile-menu"
             aria-label="Mobile navigation"
-            initial={{ opacity: 0, y: -12 }}
+            initial={reduced ? false : { opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
+            exit={reduced ? undefined : { opacity: 0, y: -12 }}
+            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
           >
-            {["Workspace", "Overview", "About", "Sign in"].map((item) => (
+            {["Workspace", "Overview", "Features", "About", "Sign in"].map((item) => (
               <a key={item} href={item === "Sign in" ? "/login" : `#${item.toLowerCase()}`} onClick={() => setMenu(false)}>
                 {item}
                 <ArrowUpRight />
@@ -256,47 +266,59 @@ function Home() {
               className="home-hero-content"
               initial={reduced ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
             >
               <p className="home-eyebrow home-pill">
                 <Sparkles />
-                LIVE WORKSPACE FOR BUILDING MATERIALS
+                RUN YOUR CONSTRUCTION BUSINESS
               </p>
               <h1>
-                BUILDCORE <span className="home-gradient-text">ERP.</span>
-              </h1>
-              <h2>
-                Strong foundations.
+                One workspace.
                 <br />
-                Smarter business.
-              </h2>
+                <span className="home-gradient-text">Complete control.</span>
+              </h1>
               <p className="home-hero-copy">
-                From the yard floor to the final invoice. Materials, people and sales move together in one
-                calm workspace.
+                Manage materials, people, stock and sales in one simple workspace—from purchase to
+                delivery.
               </p>
               <div className="home-hero-actions">
-                <motion.div whileHover={reduced ? undefined : { y: -2 }} whileTap={{ scale: 0.98 }}>
+                <motion.div
+                  whileHover={reduced ? undefined : { y: -2 }}
+                  whileTap={reduced ? undefined : { scale: 0.98 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                >
                   <Button asChild className="home-primary">
-                    <Link to="/dashboard" onClick={openDashboard}>
+                    <Link to="/login">
+                      Start workspace
                       <ArrowRight />
-                      Explore dashboard
                     </Link>
                   </Button>
                 </motion.div>
-                <motion.div whileHover={reduced ? undefined : { y: -2 }} whileTap={{ scale: 0.98 }}>
+                <motion.div
+                  whileHover={reduced ? undefined : { y: -2 }}
+                  whileTap={reduced ? undefined : { scale: 0.98 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                >
                   <Button asChild variant="outline" className="home-secondary">
-                    <Link to="/login">
-                      Sign in
+                    <Link to="/dashboard" onClick={openDashboard}>
+                      Explore dashboard
                       <ArrowUpRight />
                     </Link>
                   </Button>
                 </motion.div>
               </div>
-              <div className="home-hero-note">
-                <span>
-                  <Check />
-                </span>
-                One workspace. Every part of your day.
+              <div className="home-hero-stats" aria-label="Workspace highlights">
+                {stats.map((item) => (
+                  <article key={item.label}>
+                    <item.icon aria-hidden="true" />
+                    <div>
+                      <strong>
+                        <CountUp to={item.value} suffix={item.suffix} />
+                      </strong>
+                      <p>{item.label}</p>
+                    </div>
+                  </article>
+                ))}
               </div>
             </motion.div>
 
@@ -304,32 +326,94 @@ function Home() {
               className="home-stage"
               initial={reduced ? false : { opacity: 0, y: 36, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.9, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.95, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="home-stage-canvas" aria-hidden="true">
-                <ClientScene />
-              </div>
-              <motion.figure
-                className="home-team-chip"
-                animate={reduced ? undefined : { y: [0, -6, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              <motion.div
+                className="home-construction-art"
+                animate={reduced ? undefined : { y: [0, -4, 0] }}
+                transition={{ duration: 8, delay: 0.8, repeat: Infinity, ease: "easeInOut" }}
               >
-                <img src={team} alt="BuildCore team reviewing building plans" />
-                <figcaption>Built around your team</figcaption>
-              </motion.figure>
+                <img
+                  src={constructionHero}
+                  alt="Tower crane lifting materials over a building under construction"
+                />
+              </motion.div>
+              <motion.div
+                className="home-stage-chip home-stage-chip-inventory"
+                initial={reduced ? false : { opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.38, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span>
+                  <Boxes />
+                </span>
+                <div>
+                  <strong>Inventory</strong>
+                  <small>Stock visibility</small>
+                </div>
+                <ArrowUpRight />
+              </motion.div>
+              <motion.div
+                className="home-stage-chip home-stage-chip-people"
+                initial={reduced ? false : { opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span>
+                  <Users />
+                </span>
+                <div>
+                  <strong>People &amp; HR</strong>
+                  <small>Team operations</small>
+                </div>
+              </motion.div>
+              <motion.div
+                className="home-stage-chip home-stage-chip-sales"
+                initial={reduced ? false : { opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.62, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span>
+                  <TrendingUp />
+                </span>
+                <div>
+                  <strong>Sales</strong>
+                  <small>Order to delivery</small>
+                </div>
+              </motion.div>
+              <motion.div
+                className="home-live-overview"
+                role="group"
+                aria-label="Live operations overview"
+                initial={reduced ? false : { opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.48, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="home-live-heading">
+                  <strong>
+                    <Activity />
+                    Live overview
+                  </strong>
+                  <span>
+                    This month
+                    <ChevronDown />
+                  </span>
+                </div>
+                <div className="home-live-grid">
+                  {liveMetrics.map((metric) => (
+                    <div className="home-live-metric" key={metric.label}>
+                      <metric.icon aria-hidden="true" />
+                      <div>
+                        <small>{metric.label}</small>
+                        <strong>{metric.value}</strong>
+                        <p>{metric.change}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             </motion.div>
           </div>
-        </section>
-
-        <section className="home-stats" aria-label="Workspace highlights">
-          {stats.map((item) => (
-            <motion.article key={item.label} {...rise}>
-              <strong>
-                <CountUp to={item.value} suffix={item.suffix} />
-              </strong>
-              <p>{item.label}</p>
-            </motion.article>
-          ))}
         </section>
 
         <div className="home-material-band" aria-label="Building materials">
@@ -364,7 +448,7 @@ function Home() {
             </p>
           </motion.div>
 
-          <div className="home-modules">
+          <div id="features" className="home-modules">
             {modules.map((module, index) => (
               <motion.article
                 key={module.title}
@@ -372,7 +456,7 @@ function Home() {
                 initial={reduced ? false : { opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-60px" }}
-                transition={{ delay: index * 0.08, duration: 0.6 }}
+                transition={{ delay: index * 0.08, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
                 whileHover={reduced ? undefined : { y: -8 }}
               >
                 <div className="home-module-top">
@@ -422,7 +506,7 @@ function Home() {
                 initial={reduced ? false : { opacity: 0, x: 16 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.08, duration: 0.55 }}
+                transition={{ delay: index * 0.08, duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
               >
                 <item.icon />
                 <div>

@@ -39,8 +39,10 @@ describe("PurchaseOrderForm", () => {
       />,
     );
 
-    fireEvent.change(screen.getByLabelText("Vendor"), { target: { value: vendor["name"] } });
-    fireEvent.change(screen.getByLabelText("Material"), { target: { value: material.name } });
+    fireEvent.keyDown(screen.getByLabelText("Vendor"), { key: "ArrowDown" });
+    fireEvent.keyDown(screen.getByRole("option", { name: vendor["name"] }), { key: "Enter" });
+    fireEvent.keyDown(screen.getByLabelText("Material"), { key: "ArrowDown" });
+    fireEvent.keyDown(screen.getByRole("option", { name: material.name }), { key: "Enter" });
     fireEvent.change(screen.getByLabelText("Quantity"), { target: { value: "3" } });
 
     const amountInput = screen.getByLabelText("Amount (₹)") as HTMLInputElement;

@@ -5,6 +5,13 @@ import { ArrowRight, Building2, Mail, LockKeyhole, Eye, EyeOff, Sun, Moon, Calen
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import team from "@/assets/download.png";
 import { api, login, roleAccounts } from "@/lib/api";
 
@@ -83,7 +90,43 @@ function Login() {
           <motion.div className="login-meeting" animate={float} transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}><span className="login-note-icon"><ChartNoAxesColumnIncreasing /></span><div><strong>{day === 26 ? "Daily Meeting" : "Team Check-in"}</strong><small>12:00 PM – 01:00 PM</small><div className="login-attendees"><span>IA</span><span>SK</span><span>AM</span><span>+3</span></div></div><i /></motion.div>
         </section>
       </motion.div>
-      <Dialog open={dialog !== null} onOpenChange={(open) => { if (!open) setDialog(null); }}><DialogContent className={`login-dialog login-page ${dark ? "login-night" : ""}`}><DialogTitle>{dialog === "password" ? "Reset your password" : dialog === "admin" ? "Contact your administrator" : `Continue with ${dialog ?? "your account"}`}</DialogTitle><DialogDescription>{dialog === "password" ? "A reset token is issued for the email on the sign-in form. It expires in 30 minutes." : dialog === "admin" ? "Send an access request for the workspace role below." : "Social sign-in opens the matching workspace account."}</DialogDescription><label className="text-sm">Workspace role<select className="login-role" value={role} onChange={(e) => setRole(e.target.value)}>{["Admin", "Sub-admin", "HR Manager", "Inventory Manager", "Sales Manager", "Employee", "Sales Rep"].map((r) => <option key={r}>{r}</option>)}</select></label><Button className="login-submit" disabled={busy} onClick={() => {
+      <Dialog
+        open={dialog !== null}
+        onOpenChange={(open) => {
+          if (!open) setDialog(null);
+        }}
+      >
+        <DialogContent className={`login-dialog login-page ${dark ? "login-night" : ""}`}>
+          <DialogTitle>
+            {dialog === "password"
+              ? "Reset your password"
+              : dialog === "admin"
+                ? "Contact your administrator"
+                : `Continue with ${dialog ?? "your account"}`}
+          </DialogTitle>
+          <DialogDescription>
+            {dialog === "password"
+              ? "A reset token is issued for the email on the sign-in form. It expires in 30 minutes."
+              : dialog === "admin"
+                ? "Send an access request for the workspace role below."
+                : "Social sign-in opens the matching workspace account."}
+          </DialogDescription>
+          <label className="text-sm">
+            Workspace role
+            <Select value={role} onValueChange={setRole}>
+              <SelectTrigger aria-label="Workspace role" className="login-role-trigger">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {["Admin", "Sub-admin", "HR Manager", "Inventory Manager", "Sales Manager", "Employee", "Sales Rep"].map((r) => (
+                  <SelectItem key={r} value={r}>
+                    {r}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
+          <Button className="login-submit" disabled={busy} onClick={() => {
         void (async () => {
           if (dialog === "password") {
             if (!email.includes("@")) {
@@ -118,7 +161,12 @@ function Login() {
           await enter(account.email, account.password);
           setDialog(null);
         })();
-      }}>Preview as {role}<ArrowRight /></Button></DialogContent></Dialog>
+      }}>
+            Preview as {role}
+            <ArrowRight />
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -10,6 +10,13 @@ import { materials as catalog, inr, type Material } from "@/lib/mock-data";
 import { api, readSession } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import { Field, Modal } from "@/components/erp/Modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export const Route = createFileRoute("/inventory")({
   head: () => ({
@@ -299,15 +306,18 @@ function Inventory() {
           <Field defaultValue={editing?.name} name="name" label="Name" className="col-span-2" />
           <label className="text-xs text-muted-foreground">
             Category
-            <select
-              defaultValue={editing?.category}
-              name="category"
-              className="mt-1.5 h-10 w-full rounded-lg border border-input bg-background px-2 text-sm text-foreground"
-            >
-              {cats.slice(1).map((c) => (
-                <option key={c}>{c}</option>
-              ))}
-            </select>
+            <Select name="category" defaultValue={editing?.category ?? cats[1]}>
+              <SelectTrigger aria-label="Category" className="erp-select mt-1.5 h-10 w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {cats.slice(1).map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </label>
           <Field defaultValue={editing?.unit} name="unit" label="Unit" placeholder="bags" />
           <Field defaultValue={editing?.stock} name="stock" label="Opening stock" type="number" />

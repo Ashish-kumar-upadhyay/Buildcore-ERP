@@ -18,6 +18,13 @@ import { Button } from "@/components/ui/button";
 import { downloadCsv } from "@/components/erp/RecordsPage";
 import { inr } from "@/lib/mock-data";
 import { api, readSession } from "@/lib/api";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Month = { m: string; sales: number; purchase: number };
 type StockRow = { category: string; stock: number; price: number };
@@ -121,16 +128,16 @@ function Reports() {
           ))}
         </div>
         {tab === "Sales" && (
-          <select
-            aria-label="Report period"
-            className="erp-select"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-          >
-            <option value="6">Last 6 months</option>
-            <option value="3">Last 3 months</option>
-            <option value="1">This month</option>
-          </select>
+          <Select value={period} onValueChange={setPeriod}>
+            <SelectTrigger aria-label="Report period" className="erp-select w-auto">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="6">Last 6 months</SelectItem>
+              <SelectItem value="3">Last 3 months</SelectItem>
+              <SelectItem value="1">This month</SelectItem>
+            </SelectContent>
+          </Select>
         )}
       </div>
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">

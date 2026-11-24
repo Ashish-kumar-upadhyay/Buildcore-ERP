@@ -30,6 +30,13 @@ import {
 import { AppShell, StatCard, Panel, Pill } from "@/components/erp/AppShell";
 import { inr, type Material } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Dash = {
   materials: Material[];
@@ -199,16 +206,16 @@ function EmployeeSelfServiceDashboard() {
           <form onSubmit={(event) => void submitLeave(event)} className="grid gap-3 sm:grid-cols-2">
             <label className="text-xs text-muted-foreground sm:col-span-2">
               Leave type
-              <select
-                required
-                value={leaveType}
-                onChange={(event) => setLeaveType(event.target.value)}
-                className="mt-1.5 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground"
-              >
-                <option>Casual</option>
-                <option>Sick</option>
-                <option>Earned</option>
-              </select>
+              <Select name="leaveType" required value={leaveType} onValueChange={setLeaveType}>
+                <SelectTrigger aria-label="Leave type" className="erp-select mt-1.5 h-10 w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Casual">Casual</SelectItem>
+                  <SelectItem value="Sick">Sick</SelectItem>
+                  <SelectItem value="Earned">Earned</SelectItem>
+                </SelectContent>
+              </Select>
             </label>
             <label className="text-xs text-muted-foreground">
               From

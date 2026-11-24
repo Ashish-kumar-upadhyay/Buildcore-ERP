@@ -3,6 +3,13 @@ import { toast } from "sonner";
 import { Check, Plus, X } from "lucide-react";
 import { Panel, Pill } from "./AppShell";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { api } from "@/lib/api";
 
 type MaterialRequest = {
@@ -145,26 +152,35 @@ export function MaterialRequestsPanel({ admin }: { admin: boolean }) {
             </label>
             <label className="text-xs text-muted-foreground">
               Material / product
-              <select
+              <Select
+                name="material"
                 required
                 value={materialId}
-                onChange={(event) => setMaterialId(event.target.value)}
+                onValueChange={setMaterialId}
                 disabled={loadingMaterials || materials.length === 0}
-                className="mt-1.5 h-10 w-full rounded-lg border border-input bg-background px-3 text-sm text-foreground"
               >
-                <option value="">
-                  {loadingMaterials
-                    ? "Loading materials…"
-                    : materials.length
-                      ? "Select a material or product"
-                      : "No saved materials available"}
-                </option>
-                {materials.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name} {item.unit ? `(${item.unit})` : ""}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  aria-label="Material / product"
+                  className="erp-select mt-1.5 h-10 w-full"
+                >
+                  <SelectValue
+                    placeholder={
+                      loadingMaterials
+                        ? "Loading materials…"
+                        : materials.length
+                          ? "Select a material or product"
+                          : "No saved materials available"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {materials.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.name} {item.unit ? `(${item.unit})` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </label>
             <label className="text-xs text-muted-foreground">
               Quantity

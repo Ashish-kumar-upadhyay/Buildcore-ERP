@@ -22,6 +22,13 @@ import { toast } from "sonner";
 import { AppShell, Panel, Pill, StatCard } from "./AppShell";
 import { Modal, Field } from "./Modal";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { moduleConfigs } from "@/lib/module-config";
 import { inr, type DemoRecord, type Material } from "@/lib/mock-data";
 import { api, readSession } from "@/lib/api";
@@ -297,23 +304,31 @@ function RecordsView({
             />
           </label>
           {statusColumn?.options && (
-            <label className="flex items-center gap-2 text-xs text-muted-foreground">
-              <ListFilter className="size-4" />
-              <select
-                aria-label="Filter status"
-                className="erp-select"
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <ListFilter className="size-4" aria-hidden="true" />
+              <Select
                 value={filter}
-                onChange={(e) => {
-                  setFilter(e.target.value);
+                onValueChange={(value) => {
+                  setFilter(value);
                   setPage(0);
                 }}
               >
-                <option>All</option>
-                {statusColumn.options.map((s) => (
-                  <option key={s}>{s}</option>
-                ))}
-              </select>
-            </label>
+                <SelectTrigger
+                  aria-label="Filter status"
+                  className="erp-select w-auto min-w-[6rem]"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  {statusColumn.options.map((s) => (
+                    <SelectItem key={s} value={s}>
+                      {s}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           )}
         </div>
         <div
@@ -582,15 +597,21 @@ function RecordsView({
                 c.options ? (
                   <label key={c.key} className="text-xs text-muted-foreground">
                     {c.label}
-                    <select
+                    <Select
                       name={c.key}
-                      className="erp-select mt-1.5 w-full"
                       defaultValue={edit === "new" ? c.options[0] : String(edit[c.key] ?? "")}
                     >
-                      {c.options.map((o) => (
-                        <option key={o}>{o}</option>
-                      ))}
-                    </select>
+                      <SelectTrigger aria-label={c.label} className="erp-select mt-1.5 w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {c.options.map((o) => (
+                          <SelectItem key={o} value={o}>
+                            {o}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </label>
                 ) : (
                   <Field
